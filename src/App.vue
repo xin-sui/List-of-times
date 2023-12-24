@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, Ref } from 'vue';
+import { ref, onMounted, Ref } from 'vue';
 
 // 初始化开始日期和结束日期
 const startDate: Ref<Date> = ref(new Date(2023, 0, 1)); // 2023年1月1日
@@ -16,7 +16,18 @@ const monthList = Array.from({ length: 12 }, (_, index) => ({
 const activeIndex: Ref<number> = ref(0);
 
 // 激活指定的月份
-const active = (monthIndex: number, day: number = 1) => {
+const active = (monthIndex: number) => {
+  activeIndex.value = monthIndex;
+  const year = currentDate.value.getFullYear();
+  // 设置为月份的第一天
+  currentDate.value = new Date(year, monthIndex, 1);
+  // 由于我们想从1号开始，所以这里currentWeekStart也设置为1号
+  currentWeekStart.value = new Date(year, monthIndex, 1);
+  // 计算该周的天数，从1号开始的7天
+  daysInMonth.value = getWeekDays(currentWeekStart.value);
+};
+
+const latestDay = (monthIndex: number, day: number = 1): void => {
   activeIndex.value = monthIndex;
   const year = currentDate.value.getFullYear();
   // 设置为月份的指定天，如果未指定，则默认为第一天
@@ -25,8 +36,7 @@ const active = (monthIndex: number, day: number = 1) => {
   currentWeekStart.value = new Date(year, monthIndex, day - currentDate.value.getDay());
   // 计算该周的天数
   daysInMonth.value = getWeekDays(currentWeekStart.value);
-};
-
+}
 
 // 当前日期
 const currentDate: Ref<Date> = ref(new Date());
@@ -139,7 +149,8 @@ onMounted(() => {
   const currentMonthIndex = today.getMonth();
   const currentDay = today.getDate();
   // 激活当前月份并将激活日期设置为今天
-  active(currentMonthIndex, currentDay);
+
+  latestDay(currentMonthIndex, currentDay)
   // 更新激活的月份
   updateActiveMonth(currentDate.value);
   // 为当前日期设置当前周索引
