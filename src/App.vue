@@ -43,10 +43,6 @@ const currentDate: Ref<Date> = ref(new Date());
 // 当前月份的天数
 const daysInMonth: Ref<Array<{ date: number; dayOfWeek: string }>> = ref([]);
 
-// // 计算当前月份和年份
-// const currentMonth = computed(() => {
-//   return currentDate.value.toLocaleString('default', { month: 'long', year: 'numeric' });
-// });
 
 // 更新当前激活的月份
 const updateActiveMonth = (date: Date) => {
@@ -84,25 +80,7 @@ const togetWeek = (index: number) => {
   weekIndex.value = index;
 };
 
-// // 上一个月
-// const previousMonth = () => {
-//   if (currentDate.value <= startDate.value) {
-//     return;
-//   }
-//   currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() - 1, 1);
-//   daysInMonth.value = getWeekDays(currentDate.value);
-//   updateActiveMonth(currentDate.value);
-// };
 
-// // 下一个月
-// const nextMonth = () => {
-//   if (currentDate.value >= endDate.value) {
-//     return;
-//   }
-//   currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, 1);
-//   daysInMonth.value = getWeekDays(currentDate.value);
-//   updateActiveMonth(currentDate.value);
-// };
 
 // 星期的映射表
 const dayOfWeekMap: { [key: string]: string } = {
