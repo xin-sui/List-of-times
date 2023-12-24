@@ -1,10 +1,10 @@
-<script setup>
-import { ref, computed, onMounted } from 'vue';
+<script setup lang="ts">
+import { ref, computed, onMounted, Ref } from 'vue';
 
 // 初始化开始日期和结束日期
-const startDate = ref(new Date(2023, 0, 1)); // 2023年1月1日
-const endDate = ref(new Date(2023, 11, 31)); // 2023年12月31日
-let currentWeekStart = new Date(startDate.value); // 从开始日期开始
+const startDate: Ref<Date> = ref(new Date(2023, 0, 1)); // 2023年1月1日
+// const endDate: Ref<Date> = ref(new Date(2023, 11, 31)); // 2023年12月31日
+const currentWeekStart: Ref<Date> = ref(new Date(startDate.value)); // 从开始日期开始
 
 // 创建月份列表
 const monthList = Array.from({ length: 12 }, (_, index) => ({
@@ -13,85 +13,89 @@ const monthList = Array.from({ length: 12 }, (_, index) => ({
 }));
 
 // 当前激活的月份索引
-const activeIndex = ref(0);
+const activeIndex: Ref<number> = ref(0);
 
 // 激活指定的月份
-const active = (monthIndex) => {
+const active = (monthIndex: number, day: number = 1) => {
   activeIndex.value = monthIndex;
   const year = currentDate.value.getFullYear();
-  currentDate.value = new Date(year, monthIndex, 1);
-  currentWeekStart = new Date(year, monthIndex, 1 - currentDate.value.getDay());
-  daysInMonth.value = getWeekDays(currentDate.value);
+  // 设置为月份的指定天，如果未指定，则默认为第一天
+  currentDate.value = new Date(year, monthIndex, day);
+  // 计算当前日期所在周的开始日期
+  currentWeekStart.value = new Date(year, monthIndex, day - currentDate.value.getDay());
+  // 计算该周的天数
+  daysInMonth.value = getWeekDays(currentWeekStart.value);
 };
 
 
 // 当前日期
-const currentDate = ref(new Date());
+const currentDate: Ref<Date> = ref(new Date());
 // 当前月份的天数
-const daysInMonth = ref([]);
+const daysInMonth: Ref<Array<{ date: number; dayOfWeek: string }>> = ref([]);
 
-// 计算当前月份和年份
-const currentMonth = computed(() => {
-  return currentDate.value.toLocaleString('default', { month: 'long', year: 'numeric' });
-});
+// // 计算当前月份和年份
+// const currentMonth = computed(() => {
+//   return currentDate.value.toLocaleString('default', { month: 'long', year: 'numeric' });
+// });
 
 // 更新当前激活的月份
-const updateActiveMonth = (date) => {
+const updateActiveMonth = (date: Date) => {
   activeIndex.value = date.getMonth();
 };
 
 // 上一周
 const previousWeek = () => {
-  currentWeekStart.setDate(currentWeekStart.getDate() - 7);
-  daysInMonth.value = getWeekDays(currentWeekStart);
-  updateActiveMonth(currentWeekStart);
+  currentWeekStart.value.setDate(currentWeekStart.value.getDate() - 7);
+  daysInMonth.value = getWeekDays(currentWeekStart.value);
+  updateActiveMonth(currentWeekStart.value);
 };
 
 // 下一周
 const nextWeek = () => {
-  const potentialNextWeekStart = new Date(currentWeekStart.getFullYear(), currentWeekStart.getMonth(), currentWeekStart.getDate() + 7);
+  const potentialNextWeekStart = new Date(currentWeekStart.value.getFullYear(), currentWeekStart.value.getMonth(), currentWeekStart.value.getDate() + 7);
 
-  if (potentialNextWeekStart.getMonth() !== currentWeekStart.getMonth()) {
-    currentWeekStart = new Date(potentialNextWeekStart.getFullYear(), potentialNextWeekStart.getMonth(), 1);
+  if (potentialNextWeekStart.getMonth() !== currentWeekStart.value.getMonth()) {
+    currentWeekStart.value = new Date(potentialNextWeekStart.getFullYear(), potentialNextWeekStart.getMonth(), 1);
   } else {
-    currentWeekStart = potentialNextWeekStart;
+    currentWeekStart.value = potentialNextWeekStart;
   }
 
-  daysInMonth.value = getWeekDays(currentWeekStart);
-  updateActiveMonth(currentWeekStart);
+  daysInMonth.value = getWeekDays(currentWeekStart.value);
+  updateActiveMonth(currentWeekStart.value);
 };
 
+
 // 当前周索引
-const weekIndex = ref(1);
+const weekIndex: Ref<number> = ref(1);
 
 // 选择日期
-const togetWeek = (index) => {
+const togetWeek = (index: number) => {
   console.log(index);
   weekIndex.value = index;
 };
 
-// 上一个月
-const previousMonth = () => {
-  if (currentDate.value <= startDate.value) {
-    return;
-  }
-  currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() - 1, 1);
-  daysInMonth.value = getWeekDays(currentDate.value);
-  updateActiveMonth(currentDate.value);
-};
+// // 上一个月
+// const previousMonth = () => {
+//   if (currentDate.value <= startDate.value) {
+//     return;
+//   }
+//   currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() - 1, 1);
+//   daysInMonth.value = getWeekDays(currentDate.value);
+//   updateActiveMonth(currentDate.value);
+// };
 
-// 下一个月
-const nextMonth = () => {
-  if (currentDate.value >= endDate.value) {
-    return;
-  }
-  currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, 1);
-  daysInMonth.value = getWeekDays(currentDate.value);
-  updateActiveMonth(currentDate.value);
-};
+// // 下一个月
+// const nextMonth = () => {
+//   if (currentDate.value >= endDate.value) {
+//     return;
+//   }
+//   currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, 1);
+//   daysInMonth.value = getWeekDays(currentDate.value);
+//   updateActiveMonth(currentDate.value);
+// };
 
 // 星期的映射表
-const dayOfWeekMap = {
+const dayOfWeekMap: { [key: string]: string } = {
   'Monday': '周一',
   'Tuesday': '周二',
   'Wednesday': '周三',
@@ -102,7 +106,7 @@ const dayOfWeekMap = {
 };
 
 // 获取一周的天数
-const getWeekDays = (startDate) => {
+const getWeekDays = (startDate: Date) => {
   const days = [];
   for (let i = 0; i < 7; i++) {
     const day = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + i);
@@ -115,24 +119,33 @@ const getWeekDays = (startDate) => {
 };
 
 // 计算给定日期所在周的索引
-const getWeekIndex = (date, weekStart) => {
-  const start = new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate());
-  const diff = date - start;
-  const oneDay = 1000 * 60 * 60 * 24;
+const getWeekIndex = (date: Date, weekStart: Date): number => {
+  const startTimestamp = weekStart.getTime();
+  const dateTimestamp = date.getTime();
+  const diff = dateTimestamp - startTimestamp;
+  const oneDay = 24 * 60 * 60 * 1000; // 一天的毫秒数
   return Math.floor(diff / oneDay / 7) + 1;
 };
-// 组件挂载时执行
+
+
+
+
 onMounted(() => {
-  // 设置当前日期为今天
-  currentDate.value = new Date();
-  // 获取当前日期所在的月份
-  const currentMonthIndex = currentDate.value.getMonth();
-  // 激活当前月份
-  active(currentMonthIndex);
-  // 更新当前激活的月份
+  // 获取今天的日期
+  const today = new Date();
+  // 将 currentDate 设置为今天
+  currentDate.value = today;
+  // 获取当前月份索引和天
+  const currentMonthIndex = today.getMonth();
+  const currentDay = today.getDate();
+  // 激活当前月份并将激活日期设置为今天
+  active(currentMonthIndex, currentDay);
+  // 更新激活的月份
   updateActiveMonth(currentDate.value);
-  // 设置当前周索引为当前日期所在的周
-  weekIndex.value = getWeekIndex(currentDate.value, currentWeekStart);
+  // 为当前日期设置当前周索引
+  weekIndex.value = getWeekIndex(currentDate.value, currentWeekStart.value);
+  // 获取当前月份的天数
+  daysInMonth.value = getWeekDays(currentWeekStart.value);
 });
 
 </script>
