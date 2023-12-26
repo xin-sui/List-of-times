@@ -110,20 +110,29 @@ const togetWeek = (index: number, dateIndex: number) => {
 
     weekIndex.value = index;
 };
-
-const getWeekDays = (startDate: Date): Array<{ date: number; dayOfWeek: string; isLastDayOfMonth: boolean }> => {
-    const days: Array<{ date: number; dayOfWeek: string; isLastDayOfMonth: boolean }> = [];
+const getWeekDays = (startDate: Date): Array<{ date: number; dayOfWeek: string; isLastDayOfMonth: boolean; isWeekInSameMonth: boolean }> => {
+    const days: Array<{ date: number; dayOfWeek: string; isLastDayOfMonth: boolean; isWeekInSameMonth: boolean }> = [];
+    let isWeekInSameMonth = true;
+    const startMonth = startDate.getMonth();
     for (let i = 0; i < DAYS_IN_WEEK; i++) {
         const day: Date = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + i);
+        if (day.getMonth() !== startMonth) {
+            isWeekInSameMonth = false;
+        }
         const nextDay: Date = new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1);
         days.push({
             date: day.getDate(),
             dayOfWeek: day.toLocaleString('zh-CN', { weekday: 'long' }),
-            isLastDayOfMonth: nextDay.getMonth() !== day.getMonth() // 检查是否为月末的最后一天
+            isLastDayOfMonth: nextDay.getMonth() !== day.getMonth(), // Check if it's the last day of the month
+            isWeekInSameMonth: isWeekInSameMonth // This will be the same for all days in the week
         });
     }
+    // Update all days with the correct value of isWeekInSameMonth
+    days.forEach(day => day.isWeekInSameMonth = isWeekInSameMonth);
     return days;
 };
+
+
 
 // 计算给定日期所在周的索引
 const getWeekIndex = (date: Date, weekStart: Date): number => {
@@ -135,6 +144,11 @@ const getWeekIndex = (date: Date, weekStart: Date): number => {
 };
 
 
+const getNextMonthName = (monthIndex: number): string => {
+    const nextMonthIndex = (monthIndex + 1) % 12; // 使用模运算确保索引在0-11之间
+    const nextMonthDate = new Date(START_YEAR, nextMonthIndex, 1);
+    return nextMonthDate.toLocaleString('default', { month: 'long' });
+};
 
 
 onMounted(() => {
@@ -179,13 +193,15 @@ onMounted(() => {
                         <p>{{ item.dayOfWeek }}</p>
                     </div>
                     <!-- 显示提示信息 -->
-                    <span v-if="item.isLastDayOfMonth" class="next-month-hint">
+                    <!-- 显示提示信息 -->
+                    <span v-if="!daysInMonth[0].isWeekInSameMonth && item.isLastDayOfMonth" class="next-month-hint">
                         <span>
-                            二
-                            月
+                            {{ getNextMonthName(activeIndex) }}
+
                             囉
                         </span>
                     </span>
+
                 </li>
             </ul>
             <div class="next" @click="nextWeek">
