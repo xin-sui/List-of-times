@@ -88,8 +88,9 @@ const changeWeek = (days: number) => {
         }
         // 如果切换到上一周后跨越了月份
         else if (days < 0 && newWeekStart.getMonth() !== currentWeekStart.value.getMonth()) {
-            // 设置为上个月的最后一天
-            newWeekStart = new Date(currentWeekStart.value.getFullYear(), currentWeekStart.value.getMonth(), 0);
+            // 计算上一周的开始日期
+            const dayOfWeek = currentWeekStart.value.getDay() || DAYS_IN_WEEK; // 如果是星期日（0），则设置为7
+            newWeekStart = new Date(currentWeekStart.value.getFullYear(), currentWeekStart.value.getMonth(), currentWeekStart.value.getDate() - dayOfWeek);
             activeIndex.value = newWeekStart.getMonth(); // 更新激活的月份索引
         }
 
