@@ -4,7 +4,7 @@
 
 html {
     height: 100%;
-    font-size: 14px;
+    font-size: 62.5%;
 }
 body {
     height: 100%;
@@ -60,7 +60,7 @@ ul {
 }
 
 .container {
-    width: 1240px;
+    max-width: 1240px;
     margin: 0 auto;
     position: relative;
 }
