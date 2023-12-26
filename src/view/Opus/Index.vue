@@ -74,21 +74,34 @@ const updateActiveMonth = (date: Date) => {
 };
 
 // 通用的周切换函数
+// 通用的周切换函数
 const changeWeek = (days: number) => {
-    const newWeekStart = new Date(currentWeekStart.value.getFullYear(), currentWeekStart.value.getMonth(), currentWeekStart.value.getDate() + days);
+    let newWeekStart = new Date(currentWeekStart.value.getFullYear(), currentWeekStart.value.getMonth(), currentWeekStart.value.getDate() + days);
 
-    // 检查是否跨越了月份
-    if (days > 0 && newWeekStart.getMonth() !== currentWeekStart.value.getMonth()) {
-        // 如果是切换到下一周且跨越了月份，则设置为下个月的第一天
-        currentWeekStart.value = new Date(newWeekStart.getFullYear(), newWeekStart.getMonth(), 1);
-    } else {
-        // 否则，直接更新为新的周开始日期
+    // 检查新的周开始日期是否在允许的月份范围内
+    if (newWeekStart.getMonth() >= START_MONTH && newWeekStart.getMonth() <= END_MONTH) {
+        // 如果切换到下一周后跨越了月份
+        if (days > 0 && newWeekStart.getMonth() !== currentWeekStart.value.getMonth()) {
+            // 设置为下个月的第一天
+            newWeekStart = new Date(currentWeekStart.value.getFullYear(), currentWeekStart.value.getMonth() + 1, 1);
+            activeIndex.value = newWeekStart.getMonth(); // 更新激活的月份索引
+        }
+        // 如果切换到上一周后跨越了月份
+        else if (days < 0 && newWeekStart.getMonth() !== currentWeekStart.value.getMonth()) {
+            // 设置为上个月的最后一天
+            newWeekStart = new Date(currentWeekStart.value.getFullYear(), currentWeekStart.value.getMonth(), 0);
+            activeIndex.value = newWeekStart.getMonth(); // 更新激活的月份索引
+        }
+
+        // 更新当前周的开始日期
         currentWeekStart.value = newWeekStart;
+        // 更新当前月份的天数
+        daysInMonth.value = getWeekDays(currentWeekStart.value);
+        // 更新激活的月份
+        updateActiveMonth(currentWeekStart.value);
     }
-
-    daysInMonth.value = getWeekDays(currentWeekStart.value);
-    updateActiveMonth(currentWeekStart.value);
 };
+;
 
 // 上一周
 const previousWeek = (): void => {
@@ -116,6 +129,10 @@ const getWeekDays = (startDate: Date): Array<{ date: number; dayOfWeek: string; 
     const startMonth = startDate.getMonth();
     for (let i = 0; i < DAYS_IN_WEEK; i++) {
         const day: Date = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + i);
+        // 如果日期不在指定的月份范围内，则跳过
+        if (day.getMonth() < START_MONTH || day.getMonth() > END_MONTH) {
+            continue;
+        }
         if (day.getMonth() !== startMonth) {
             isWeekInSameMonth = false;
         }
@@ -131,6 +148,7 @@ const getWeekDays = (startDate: Date): Array<{ date: number; dayOfWeek: string; 
     days.forEach(day => day.isWeekInSameMonth = isWeekInSameMonth);
     return days;
 };
+
 
 
 
@@ -234,7 +252,7 @@ onMounted(() => {
     .month {
         height: 84px;
         margin-left: 38px;
-        width: 24.6875em;
+        width: 27%;
 
         ul {
             display: flex;
@@ -273,7 +291,7 @@ onMounted(() => {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        width: 1100px;
+        width: 100%;
         padding: 0 54px;
 
 
