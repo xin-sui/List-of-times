@@ -1,30 +1,39 @@
 <template>
-    <Index></Index>
+  <!-- <Index></Index> -->
 
-    <!-- <Schedule :title="'訂票/播放时间表'">
-        <div class="playlist">
-            <SchedultItem v-for="(item, i) in data" :key="i" :class="{ 'last-child': data.length - 1 === i }">
-                <template #left>
-                    <div class="time">
-                        <div class="time-left">
-                            (周三)
-                            <span> 2023 </span>
-                        </div>
-                        <div class="time-right">
-                            <span> /01/18 08:00 </span>
-                        </div>
-                    </div>
-
-                    <div class="address">这里显示地点，这是第一个地址</div>
-                </template>
-                <template #right> 正价票：99.00 </template>
-            </SchedultItem>
-            <div class="page">
-                <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next" :total="100" />
-                <div class="play">去购票</div>
+  <Schedule :title="'訂票/播放时间表'">
+    <div class="playlist">
+      <SchedultItem v-for="(item, i) in data" :key="i" :class="{ 'last-child': data.length - 1 === i }">
+        <template #left>
+          <div class="time">
+            <div class="time-left">
+              (周三)
+              <span> 2023 </span>
             </div>
-        </div>
-    </Schedule> -->
+            <div class="time-right">
+              <span> /01/18 08:00 </span>
+            </div>
+          </div>
+
+          <div class="address">这里显示地点，这是第一个地址</div>
+        </template>
+        <template #right>
+          <div class="play-right">
+            <div class="price">
+              正价票：99.00
+            </div>
+
+            <div class="play">去购票</div>
+          </div>
+
+        </template>
+      </SchedultItem>
+      <div class="page">
+        <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next" :total="100" />
+
+      </div>
+    </div>
+  </Schedule>
 </template>
 
 <script setup lang="ts">
@@ -72,6 +81,25 @@ const handleCurrentChange = (val: number) => {
     }
   }
 
+  .play-right {
+    display: flex;
+    align-items: center;
+
+    .play {
+      font-family: Noto Sans TC;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 32px;
+      letter-spacing: 0.04em;
+      text-align: center;
+      color: rgba(255, 255, 255, 1);
+      margin-left: 26px;
+      width: 138px;
+      height: 32px;
+      background-color: rgba(255, 56, 14, 1);
+    }
+  }
+
   .last-child {
     border-bottom: none;
   }
@@ -114,7 +142,7 @@ const handleCurrentChange = (val: number) => {
       }
 
       .el-pager li {
-        color: rgba(191, 191, 191, 1) ;
+        color: rgba(191, 191, 191, 1);
         font-family: Noto Sans;
         font-size: 14px;
         font-style: normal;
@@ -128,43 +156,39 @@ const handleCurrentChange = (val: number) => {
       }
 
       .el-pager li.is-active {
-        color: rgba(0, 0, 0, 1)  ;
+        color: rgba(0, 0, 0, 1);
 
       }
 
     }
 
-    .play {
-      font-family: Noto Sans TC;
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 32px;
-      letter-spacing: 0.04em;
-      text-align: center;
-      color: rgba(255, 255, 255, 1);
-      margin-left: 70px;
-      width: 138px;
-      height: 32px;
-      background-color: rgba(255, 56, 14, 1);
-    }
+
   }
 }
 
 @media (max-width: 768px) {
   .playlist {
     li {
-      height: 126px;
+      height: 153px;
       flex-direction: column;
-      padding: 20px 18px;
       align-items: flex-start;
+      padding: 24px 0;
 
       .left {
+        width: 100%;
         flex-direction: column;
         align-items: flex-start;
       }
 
       .right {
         margin-top: 16px;
+        width: 100%;
+
+        .play-right {
+          height: 100%;
+          justify-content: space-between;
+          width: 100%;
+        }
       }
 
       .address {
