@@ -1,13 +1,13 @@
 <template>
-    <!-- <Index></Index> -->
+    <Index></Index>
 
-    <Schedule :title="'訂票/播放时间表'">
+    <!-- <Schedule :title="'訂票/播放时间表'">
         <div class="playlist">
-            <SchedultItem v-for="(item,i) in data" :key="i" :class="{'last-child':data.length-1===i}">
+            <SchedultItem v-for="(item, i) in data" :key="i" :class="{ 'last-child': data.length - 1 === i }">
                 <template #left>
                     <div class="time">
                         <div class="time-left">
-                            （周三）
+                            (周三)
                             <span> 2023 </span>
                         </div>
                         <div class="time-right">
@@ -20,11 +20,11 @@
                 <template #right> 正价票：99.00 </template>
             </SchedultItem>
             <div class="page">
-                <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next" :total="500" />
+                <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next" :total="100" />
                 <div class="play">去购票</div>
             </div>
         </div>
-    </Schedule>
+    </Schedule> -->
 </template>
 
 <script setup lang="ts">
@@ -114,13 +114,22 @@ const handleCurrentChange = (val: number) => {
       }
 
       .el-pager li {
-        color: #000;
+        color: rgba(191, 191, 191, 1) ;
         font-family: Noto Sans;
         font-size: 14px;
         font-style: normal;
         font-weight: 700;
         line-height: normal;
         letter-spacing: 0.84px;
+
+        li.is-active {
+          color: aliceblue;
+        }
+      }
+
+      .el-pager li.is-active {
+        color: rgba(0, 0, 0, 1)  ;
+
       }
 
     }
@@ -140,14 +149,50 @@ const handleCurrentChange = (val: number) => {
     }
   }
 }
+
 @media (max-width: 768px) {
-  .time-left{
- font-family: Noto Sans;
-      font-size: 20px;
-      font-style: normal;
-      font-weight: 700;
-      line-height: normal;
-      letter-spacing: 1.2px;
+  .playlist {
+    li {
+      height: 126px;
+      flex-direction: column;
+      padding: 20px 18px;
+      align-items: flex-start;
+
+      .left {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .right {
+        margin-top: 16px;
+      }
+
+      .address {
+        height: 16px;
+        margin-top: 12px;
+      }
+
+    }
+
+    .page {
+      flex-direction: column;
+      justify-content: center;
+      height: 100px;
+
+      .play {
+        margin: 0;
+        margin-top: 24px;
+      }
+    }
+  }
+
+  .time-left {
+    font-family: Noto Sans;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    letter-spacing: 1.2px;
   }
 }
 </style>

@@ -1,18 +1,15 @@
 <script setup lang="ts">
 defineProps<{
-    title?: string
+    title: string
 }>()
 </script>
 <template>
     <p class="time-time container">{{ title }}</p>
     <div class="schedule container">
         <!-- 列表 -->
-        <div class="data-list">
-            <ul>
-                <slot></slot>
-            </ul>
-
-        </div>
+        <ul>
+            <slot></slot>
+        </ul>
     </div>
 </template>
 <style scoped lang="scss">
