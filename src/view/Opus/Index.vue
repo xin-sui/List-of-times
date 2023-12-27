@@ -90,21 +90,25 @@ const changeWeek = (days: number) => {
         // 如果切换到上一周后跨越了月份
         else if (days < 0 && newWeekStart.getMonth() !== currentWeekStart.value.getMonth()) {
             // 计算上一周的开始日期
-            const dayOfWeek = currentWeekStart.value.getDay() || DAYS_IN_WEEK.value; // 如果是星期日（0），则设置为7
+            const dayOfWeek = currentWeekStart.value.getDay() || DAYS_IN_WEEK.value;
+
+            // 减去7天，得到上一周的日期
             newWeekStart = new Date(currentWeekStart.value.getFullYear(), currentWeekStart.value.getMonth(), currentWeekStart.value.getDate() - dayOfWeek);
+
             activeIndex.value = newWeekStart.getMonth(); // 更新激活的月份索引
+
         }
 
         // 更新当前周的开始日期
         currentWeekStart.value = newWeekStart;
-
+        weekDateIndex.value = currentWeekStart.value.getDate();
         // 更新当前月份的天数
         daysInMonth.value = getWeekDays(currentWeekStart.value);
         // 更新激活的月份
         updateActiveMonth(currentWeekStart.value);
     }
 };
-;
+
 
 // 上一周
 const previousWeek = (): void => {
@@ -126,36 +130,46 @@ const onResize = () => {
 
 // 当前周索引
 const weekIndex: Ref<number> = ref(1);
-
+const weekDateIndex: Ref<number> = ref(1);
 // 选择日期
 const togetWeek = (index: number, dateIndex: number) => {
     console.log(dateIndex);
-
+    weekDateIndex.value = dateIndex;
     weekIndex.value = index;
 };
 const getWeekDays = (startDate: Date): Array<{ date: number; dayOfWeek: string; isLastDayOfMonth: boolean; isWeekInSameMonth: boolean }> => {
+    // 定义一个数组，用于存储每一天的信息
     const days: Array<{ date: number; dayOfWeek: string; isLastDayOfMonth: boolean; isWeekInSameMonth: boolean }> = [];
+    // 定义一个布尔值，用于判断是否在同一月份
     let isWeekInSameMonth = true;
+    // 获取开始日期的月份
     const startMonth = startDate.getMonth();
+    // 遍历每一天的信息
     for (let i = 0; i < DAYS_IN_WEEK.value; i++) {
+        // 创建一个新的日期对象
         const day: Date = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + i);
         // 如果日期不在指定的月份范围内，则跳过
         if (day.getMonth() < START_MONTH || day.getMonth() > END_MONTH) {
             continue;
         }
+        // 如果日期不在同一月份，则将布尔值设置为false
         if (day.getMonth() !== startMonth) {
             isWeekInSameMonth = false;
         }
+        // 创建一个新的日期对象，用于获取下一个日期
         const nextDay: Date = new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1);
+        // 将每一天的信息添加到数组中
         days.push({
             date: day.getDate(),
             dayOfWeek: day.toLocaleString('zh-CN', { weekday: 'long' }),
-            isLastDayOfMonth: nextDay.getMonth() !== day.getMonth(), // Check if it's the last day of the month
-            isWeekInSameMonth: isWeekInSameMonth // This will be the same for all days in the week
+            isLastDayOfMonth: nextDay.getMonth() !== day.getMonth(),
+            isWeekInSameMonth: isWeekInSameMonth
         });
     }
-    // Update all days with the correct value of isWeekInSameMonth
+
+    // 将每一天的isWeekInSameMonth属性设置为布尔值
     days.forEach(day => day.isWeekInSameMonth = isWeekInSameMonth);
+    // 返回每一天的信息
     return days;
 };
 
@@ -618,6 +632,9 @@ onUnmounted(() => {
         p{
             padding: 5px 12px !important;
         }
+    }
+    .next-month-hint{
+        display: none;
     }
 }
 </style>
