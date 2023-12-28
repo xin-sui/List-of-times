@@ -49,7 +49,7 @@ const setCurrentAndWeekStart = (year: number, monthIndex: number, day: number) =
         currentWeekStart.value = new Date(year, monthIndex, day - dayOfWeek + 1);
 
     }
-
+    weekDateIndex.value = 1
     daysInMonth.value = getWeekDays(currentWeekStart.value);
     updateActiveMonth(currentDate.value);
 };
