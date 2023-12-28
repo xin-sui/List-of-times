@@ -1,7 +1,7 @@
 <template>
-  <!-- <Index></Index> -->
+  <Index></Index>
 
-  <Schedule :title="'訂票/播放时间表'">
+  <!-- <Schedule :title="'訂票/播放时间表'">
     <div class="playlist">
       <SchedultItem v-for="(item, i) in data" :key="i" :class="{ 'last-child': data.length - 1 === i }">
         <template #left>
@@ -33,7 +33,7 @@
 
       </div>
     </div>
-  </Schedule>
+  </Schedule> -->
 </template>
 
 <script setup lang="ts">

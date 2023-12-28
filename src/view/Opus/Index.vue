@@ -18,8 +18,8 @@ interface MonthItem {
     index: number;
 }
 // 指定开始结束月份
-const START_MONTH = 0; // 从3月开始（月份索引从0开始，所以3月是索引2）
-const END_MONTH = 3; // 到8月结束（同样，8月是索引7）
+const START_MONTH = 2; // 从3月开始（月份索引从0开始，所以3月是索引2）
+const END_MONTH = 6; // 到8月结束（同样，8月是索引7）
 const monthList: MonthItem[] = Array.from(
     { length: END_MONTH - START_MONTH + 1 },
     (_, index) => ({
@@ -38,12 +38,18 @@ const setCurrentAndWeekStart = (year: number, monthIndex: number, day: number) =
     if (day === 1) {
         // 如果是月份的第一天，那么周开始日期也设置为这一天
         currentWeekStart.value = new Date(year, monthIndex, 1);
+
     } else {
         // 否则，计算周开始日期
         let dayOfWeek = currentDate.value.getDay();
+        console.log('dayOfWeek', dayOfWeek);
+
         dayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek; // 如果今天是星期日（0），则设置 dayOfWeek 为 7
+
         currentWeekStart.value = new Date(year, monthIndex, day - dayOfWeek + 1);
+
     }
+
     daysInMonth.value = getWeekDays(currentWeekStart.value);
     updateActiveMonth(currentDate.value);
 };
@@ -56,9 +62,10 @@ const active = (monthIndex: number) => {
 };
 //激活当前最新的一天
 // const latestDay = (monthIndex: number, day: number = 1) => {
-//   activeIndex.value = monthIndex;
-//   const year = currentDate.value.getFullYear();
-//   setCurrentAndWeekStart(year, monthIndex, day);
+//     activeIndex.value = monthIndex;
+//     const year = currentDate.value.getFullYear();
+
+//     setCurrentAndWeekStart(year, monthIndex, day);
 // };
 
 
@@ -136,13 +143,13 @@ const onResize = () => {
 };
 
 // 当前周索引
-const weekIndex: Ref<number> = ref(1);
+
 const weekDateIndex: Ref<number> = ref(1);
 // 选择日期
-const togetWeek = (index: number, dateIndex: number) => {
-    console.log(dateIndex);
+const togetWeek = (dateIndex: number) => {
+
     weekDateIndex.value = dateIndex;
-    weekIndex.value = index;
+
 };
 const getWeekDays = (startDate: Date): Array<{ date: number; dayOfWeek: string; isLastDayOfMonth: boolean; isWeekInSameMonth: boolean }> => {
     // 定义一个数组，用于存储每一天的信息
@@ -192,14 +199,7 @@ watchEffect(() => {
     daysInMonth.value = getWeekDays(currentWeekStart.value);
 });
 
-// 计算给定日期所在周的索引
-const getWeekIndex = (date: Date, weekStart: Date): number => {
-    const startTimestamp: number = weekStart.getTime();
-    const dateTimestamp: number = date.getTime();
-    const diff: number = dateTimestamp - startTimestamp;
-    const oneDay: number = 24 * 60 * 60 * 1000; // 一天的毫秒数
-    return Math.floor(diff / oneDay / DAYS_IN_WEEK.value) + 1;
-};
+
 
 
 const getNextMonthName = (monthIndex: number): string => {
@@ -212,12 +212,15 @@ const getNextMonthName = (monthIndex: number): string => {
 onMounted(() => {
     const today = new Date();
     currentDate.value = today;
-    //激活最新的一天
-    // latestDay(today.getMonth(), today.getDate());
+
     //指定激活月份
     activeIndex.value = 2
     active(2)
-    weekIndex.value = getWeekIndex(currentDate.value, currentWeekStart.value);
+    //激活最新的一天
+    // latestDay(today.getMonth(), today.getDate());
+    // //设置指定多少号或者最新的一天
+    // weekDateIndex.value = currentDate.value.getDate()
+
     // 获取当前月份的天数
     daysInMonth.value = getWeekDays(currentWeekStart.value);
     window.addEventListener('resize', onResize);
@@ -250,8 +253,8 @@ onUnmounted(() => {
             </div>
 
             <ul>
-                <li v-for="(item, index) in daysInMonth" :key="index" :class="{ weekActive: weekIndex === index + 1 }"
-                    @click="togetWeek(index + 1, item.date)">
+                <li v-for="item, in daysInMonth" :key="item.date" :class="{ weekActive: weekDateIndex === item.date }"
+                    @click="togetWeek(item.date)">
                     <div class="date-week">
                         <p>{{ item.date }}</p>
                         <p>{{ item.dayOfWeek }}</p>
@@ -328,7 +331,8 @@ onUnmounted(() => {
     .month {
         height: 84px;
         margin-left: 38px;
-        width: 27%;
+
+        width: 100%;
 
         ul {
             display: flex;
